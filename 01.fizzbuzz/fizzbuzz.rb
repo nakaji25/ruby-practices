@@ -3,9 +3,9 @@
     puts n
   elsif (n % 5 != 0) && (n % 3 == 0)
     puts "Fizz"
-    elsif (n % 5 == 0) && (n % 3 != 0)
+  elsif (n % 5 == 0) && (n % 3 != 0)
       puts "Buzz"
-    else
+  else
       puts "FizzBuzz"
   end
 end
