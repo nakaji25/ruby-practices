@@ -20,18 +20,18 @@ end
 
 def game_point(frames)
   point = 0
-  (0..FRAMES - 1).each do |number|
+  (0..FRAMES - 1).each do |frame|
     point +=
-      if frames[number][0] == 10 # strike
-        if frames[number + 1][0] != 10
-          10 + frames[number + 1].sum
+      if frames[frame][0] == 10 # strike
+        if frames[frame + 1][0] != 10
+          10 + frames[frame + 1].sum
         else
-          10 + frames[number + 1].sum + frames[number + 2][0] # 2連続ストライクの場合次の1投目も加算
+          10 + frames[frame + 1].sum + frames[frame + 2][0] # 2連続ストライクの場合次の1投目も加算
         end
-      elsif frames[number].sum == 10 # spare
-        10 + frames[number + 1][0]
+      elsif frames[frame].sum == 10 # spare
+        10 + frames[frame + 1][0]
       else
-        frames[number].sum
+        frames[frame].sum
       end
   end
   puts point
