@@ -2,33 +2,28 @@
 require 'date'
 require 'optparse'
 
+INDENTSPACES = 5
+STARTINDENTS = 3
+
 opt = OptionParser.new
 today = Date.today
-values = [today.year,today.month]
-opt.on('-y int') {|v| values[0] = v.to_i }
-opt.on('-m int') {|v| values[1] = v.to_i }
+year = today.year
+month = today.month
+opt.on('-y int') { |v| year = v.to_i }
+opt.on('-m int') { |v| month = v.to_i }
 opt.parse!(ARGV)
 
-week = ["日","月","火","水","木","金","土"]
-start_day = Date.new(values[0],values[1],1)
-end_day = Date.new(values[0],values[1],-1).day.to_i
+weeks = %w[日 月 火 水 木 金 土]
+start_day = Date.new(year, month, 1)
+end_day = Date.new(year, month, -1)
 
-puts "      " + values[1].to_s + "月" + values[0].to_s
-week.each do |w|
-  print w + " "
+puts ' ' * INDENTSPACES + "#{month.to_s.rjust(2)}月 #{year.to_s.rjust(4)}"
+puts weeks.join(' ')
+(1..start_day.cwday).each do
+  print ' ' * STARTINDENTS
 end
-print "\n"
-(1..start_day.cwday).each do |space|
-  print "   "
-end
-(0..end_day-1).each do |d| 
-  calender = start_day + d
-  calender_day = calender.day.to_s + " " 
-  calender_day = " " + calender_day if (calender.day < 10) 
-  
-  if (calender.cwday == 6) || (calender.day == end_day)
-    puts calender_day 
-  else
-    print calender_day
-  end
+(start_day..end_day).each do |date|
+  print ' ' unless (date.cwday == weeks.length) || (date.day == start_day.day)
+  print date.day.to_s.rjust(2)
+  print "\n" if (date.cwday == weeks.length - 1) || (date.day == end_day.day)
 end
