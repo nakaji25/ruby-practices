@@ -1,41 +1,41 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-FRAMES = 10 # 1ゲームのフレーム数
+FRAMES = 10
 
-def data_input
-  score = ARGV[0]
-  scores = score.split(',')
+def gets_score
+  scores_text = ARGV[0]
+  scores = scores_text.split(',')
   shots = []
-  scores.each do |s|
-    if s == 'X' # strike
+  scores.each do |score|
+    if score == 'X'
       shots << 10
       shots << 0
     else
-      shots << s.to_i
+      shots << score.to_i
     end
   end
   shots.each_slice(2).to_a
 end
 
-def game_point(frames)
+def sum_points(scores)
   point = 0
-  (0..FRAMES - 1).each do |frame|
+  FRAMES.sum do |i|
     point +=
-      if frames[frame][0] == 10 # strike
-        if frames[frame + 1][0] != 10
-          10 + frames[frame + 1].sum
+      if scores[i][0] == 10
+        if scores[i + 1][0] != 10
+          10 + scores[i + 1].sum
         else
-          10 + frames[frame + 1].sum + frames[frame + 2][0] # 2連続ストライクの場合次の1投目も加算
+          10 + scores[i + 1].sum + scores[i + 2][0]
         end
-      elsif frames[frame].sum == 10 # spare
-        10 + frames[frame + 1][0]
+      elsif scores[i].sum == 10
+        10 + scores[i + 1][0]
       else
-        frames[frame].sum
+        scores[i].sum
       end
   end
   puts point
 end
 
-frames = data_input
-game_point(frames)
+scores = gets_score
+sum_points(scores)
