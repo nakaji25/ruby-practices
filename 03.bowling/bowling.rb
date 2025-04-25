@@ -19,23 +19,20 @@ def gets_score
 end
 
 def sum_points(scores)
-  point = 0
-  FRAMES.sum do |i|
-    point +=
-      if scores[i][0] == 10
-        if scores[i + 1][0] != 10
-          10 + scores[i + 1].sum
-        else
-          10 + scores[i + 1].sum + scores[i + 2][0]
-        end
-      elsif scores[i].sum == 10
-        10 + scores[i + 1][0]
+  FRAMES.times.sum do |i|
+    if scores[i][0] == 10
+      if scores[i + 1][0] != 10
+        10 + scores[i + 1].sum
       else
-        scores[i].sum
+        10 + scores[i + 1].sum + scores[i + 2][0]
       end
+    elsif scores[i].sum == 10
+      10 + scores[i + 1][0]
+    else
+      scores[i].sum
+    end
   end
-  puts point
 end
 
 scores = gets_score
-sum_points(scores)
+puts sum_points(scores)
