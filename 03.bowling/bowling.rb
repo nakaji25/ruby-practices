@@ -6,19 +6,19 @@ FRAMES = 10
 def generate_frames
   pins_text = ARGV[0]
   pins = pins_text.split(',')
-  frames = []
+  normalized_pins = []
   pins.each do |pin|
     if pin == 'X'
-      frames << 10
-      frames << 0
+      normalized_pins << 10
+      normalized_pins << 0
     else
-      frames << pin.to_i
+      normalized_pins << pin.to_i
     end
   end
-  frames.each_slice(2).to_a
+  normalized_pins.each_slice(2).to_a
 end
 
-def sum_score(frames)
+def calc_score(frames)
   FRAMES.times.sum do |i|
     if frames[i][0] == 10
       if frames[i + 1][0] != 10
