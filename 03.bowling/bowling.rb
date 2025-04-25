@@ -3,36 +3,36 @@
 
 FRAMES = 10
 
-def gets_score
-  scores_text = ARGV[0]
-  scores = scores_text.split(',')
-  shots = []
-  scores.each do |score|
-    if score == 'X'
-      shots << 10
-      shots << 0
+def generate_pins
+  frames_text = ARGV[0]
+  frames = frames_text.split(',')
+  pins = []
+  frames.each do |frame|
+    if frame == 'X'
+      pins << 10
+      pins << 0
     else
-      shots << score.to_i
+      pins << frame.to_i
     end
   end
-  shots.each_slice(2).to_a
+  pins.each_slice(2).to_a
 end
 
-def sum_points(scores)
+def sum_pins(pins)
   FRAMES.times.sum do |i|
-    if scores[i][0] == 10
-      if scores[i + 1][0] != 10
-        10 + scores[i + 1].sum
+    if pins[i][0] == 10
+      if pins[i + 1][0] != 10
+        10 + pins[i + 1].sum
       else
-        10 + scores[i + 1].sum + scores[i + 2][0]
+        10 + pins[i + 1].sum + pins[i + 2][0]
       end
-    elsif scores[i].sum == 10
-      10 + scores[i + 1][0]
+    elsif pins[i].sum == 10
+      10 + pins[i + 1][0]
     else
-      scores[i].sum
+      pins[i].sum
     end
   end
 end
 
-scores = gets_score
-puts sum_points(scores)
+pins = generate_pins
+puts sum_pins(pins)
