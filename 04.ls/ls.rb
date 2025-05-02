@@ -15,9 +15,9 @@ end
 def dirs_list
   opt = check_opt
   if opt[:a]
-    Dir.entries('.').sort_by(&:downcase)
+    Dir.entries('.').sort
   else
-    Dir.glob('*').sort_by(&:downcase)
+    Dir.glob('*')
   end
 end
 
