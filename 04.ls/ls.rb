@@ -1,17 +1,35 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
+def check_opt
+  opt = OptionParser.new
+  options = {}
+  opt.on('-a') { |all| options[:a] = all }
+
+  opt.parse!(ARGV)
+  options
+end
+
 def dirs_list
-  Dir.glob('*')
+  opt = check_opt
+  if opt[:a]
+    Dir.entries('.').sort_by(&:downcase)
+  else
+    Dir.glob('*').sort_by(&:downcase)
+  end
 end
 
 def display_dirs
   dirs = dirs_list
-  max_length = dirs.max_by(&:length).length
+  dirs.size
+  max_length = dirs.max_by(&:length).length + 1
   terminal_cols = `tput cols`.to_i
-  output_rows = ((max_length * dirs.size).to_f / terminal_cols).ceil
+  output_rows = (dirs.size.to_f / (terminal_cols / max_length).floor).ceil
   output_rows.times do |row|
     row.step(dirs.size - 1, output_rows) do |col|
-      print dirs[col].ljust(max_length + 1)
+      print dirs[col].ljust(max_length)
     end
     print "\n"
   end
