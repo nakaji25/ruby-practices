@@ -15,12 +15,13 @@ end
 def dirs_list
   opt = check_opt
   if opt[:a]
-    Dir.entries('.').sort
-  elsif opt[:r]
-    Dir.glob('*').reverse
+    dirs = Dir.entries('.').sort if opt[:a]
   else
-    Dir.glob('*')
+    dirs = Dir.glob('*')
   end
+  return unless opt[:r]
+
+  dirs.reverse if opt[:r]
 end
 
 def display_dirs
