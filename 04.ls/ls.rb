@@ -59,22 +59,16 @@ def dir_permission(file_stat)
 end
 
 def extra_permission(dir_permission, octal_permission)
-  extra_permission = octal_permission[-4, 1].to_i.to_s(2)
-  unless extra_permission == '0'
-    extra_permission.size.times do |n|
-      if n.zero?
-        dir_permission[-1] = if dir_permission[-1] == 'x'
-                               't'
-                             else
-                               'T'
-                             end
-      else
-        dir_permission[-1 * 2 ^ (n + 1)] = if dir_permission[-1 * 2 ^ (n + 1)] == 'x'
-                                             's'
-                                           else
-                                             'S'
-                                           end
-      end
+  extra_permission = octal_permission[-4, 1].to_i.to_s(2).rjust(3, '0')
+  unless extra_permission == '000'
+    if extra_permission[-1]
+      dir_permission[-1] = dir_permission[-1] == 'x' ? 't' : 'T'
+    end
+    if extra_permission[-2]
+      dir_permission[-4] = dir_permission[-4] == 'x' ? 's' : 'S'
+    end
+    if extra_permission[-3]
+      dir_permission[-7] = dir_permission[-7] == 'x' ? 's' : 'S'
     end
   end
   dir_permission
