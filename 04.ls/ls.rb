@@ -7,18 +7,21 @@ def check_opt
   opt = OptionParser.new
   options = {}
   opt.on('-a') { |all| options[:a] = all }
-
+  opt.on('-r') { |reverse| options[:r] = reverse }
   opt.parse!(ARGV)
   options
 end
 
 def dirs_list
   opt = check_opt
-  if opt[:a]
-    Dir.entries('.').sort
-  else
-    Dir.glob('*')
-  end
+  dirs = if opt[:a]
+           Dir.entries('.').sort
+         else
+           Dir.glob('*')
+         end
+  return dirs unless opt[:r]
+
+  dirs.reverse
 end
 
 def display_dirs
