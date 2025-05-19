@@ -32,28 +32,30 @@ end
 def long_format(dirs)
   file_type = { fifo: 'p', characterSpecial: 'c', directory: 'd', blockSpecial: 'b', file: '-', link: 'l', socket: 's' }
   dirs_blocks = 0
-  long_dirs = Hash.new { |h, k| h[k] = [] }
+  long_dirs = []
   dirs.each do |dir|
+    long_dir = {}
     fs = File::Stat.new(dir)
     dirs_blocks += fs.blocks
-    long_dirs[:file_type] << file_type[File.ftype(dir).to_sym]
-    long_dirs[:permission] << dir_permission(fs)
-    long_dirs[:nlink] << fs.nlink.to_s
-    long_dirs[:owner_name] << Etc.getpwuid(fs.uid).name
-    long_dirs[:grop_name] << Etc.getgrgid(fs.gid).name
-    long_dirs[:dir_size] << fs.size.to_s
-    long_dirs[:accses_time] << fs.atime.strftime('%_m %e %H:%M ')
+    long_dir[:name] = dir
+    long_dir[:file_type] = file_type[File.ftype(dir).to_sym]
+    long_dir[:permission] = dir_permission(fs)
+    long_dir[:nlink] = fs.nlink.to_s
+    long_dir[:owner_name] = Etc.getpwuid(fs.uid).name
+    long_dir[:grop_name] = Etc.getgrgid(fs.gid).name
+    long_dir[:dir_size] = fs.size.to_s
+    long_dir[:accses_time] = fs.atime.strftime('%_m %e %H:%M ')
+    long_dirs << long_dir
   end
-  long_dirs[:total_block] = dirs_blocks
-  long_dirs
+  [long_dirs, dirs_blocks]
 end
 
 def dir_permission(file_stat)
   permission = ['---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx']
   dir_permission = ''
-  octal_permission = file_stat.mode.to_s(8)
-  (-3..-1).each do |i|
-    dir_permission += permission[octal_permission[i, 1].to_i]
+  octal_permission = file_stat.mode.to_s(8)[-3, 3].split('')
+  3.times do |i|
+    dir_permission = octal_permission.map { |n| permission[n.to_i] }.join
   end
   dir_permission = extra_permission(dir_permission, octal_permission)
 end
@@ -75,18 +77,17 @@ def extra_permission(dir_permission, octal_permission)
 end
 
 def display_long(dirs)
-  long_dirs = long_format(dirs)
-  puts "total #{long_dirs[:total_block]}"
-  dirs.size.times do |i|
-    print long_dirs[:file_type][i]
-    print long_dirs[:permission][i]
-    print long_dirs[:nlink][i].rjust(calc_padding(long_dirs[:nlink]))
-    print long_dirs[:owner_name][i].rjust(calc_padding(long_dirs[:owner_name]))
-    print long_dirs[:grop_name][i].rjust(calc_padding(long_dirs[:grop_name]))
-    print long_dirs[:dir_size][i].rjust(calc_padding(long_dirs[:dir_size]))
-    print long_dirs[:accses_time][i].rjust(calc_padding(long_dirs[:accses_time]))
-    print dirs[i]
-    print "\n"
+  long_dirs, dirs_blocks = long_format(dirs)
+  puts "total #{dirs_blocks}"
+  long_dirs.each do |long_dir|
+    print long_dir[:file_type]
+    print long_dir[:permission]
+    print long_dir[:nlink].rjust(calc_padding(long_dirs.map { |d| d[:nlink] }))
+    print long_dir[:owner_name].rjust(calc_padding(long_dirs.map { |d| d[:owner_name] }))
+    print long_dir[:grop_name].rjust(calc_padding(long_dirs.map { |d| d[:grop_name] }))
+    print long_dir[:dir_size].rjust(calc_padding(long_dirs.map { |d| d[:dir_size] }))
+    print long_dir[:accses_time].rjust(calc_padding(long_dirs.map { |d| d[:accses_time] }))
+    puts long_dir[:name]
   end
 end
 
