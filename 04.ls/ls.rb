@@ -32,8 +32,7 @@ end
 def long_format(dirs)
   file_type = { fifo: 'p', characterSpecial: 'c', directory: 'd', blockSpecial: 'b', file: '-', link: 'l', socket: 's' }
   dirs_blocks = 0
-  long_dirs = []
-  dirs.each do |dir|
+  long_dirs = dirs.map do |dir|
     long_dir = {}
     fs = File::Stat.new(dir)
     dirs_blocks += fs.blocks
@@ -45,7 +44,7 @@ def long_format(dirs)
     long_dir[:grop_name] = Etc.getgrgid(fs.gid).name
     long_dir[:dir_size] = fs.size.to_s
     long_dir[:accses_time] = fs.atime.strftime('%_m %e %H:%M ')
-    long_dirs << long_dir
+    long_dir
   end
   [long_dirs, dirs_blocks]
 end
@@ -54,9 +53,7 @@ def dir_permission(file_stat)
   permission = ['---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx']
   dir_permission = ''
   octal_permission = file_stat.mode.to_s(8)[-3, 3].split('')
-  3.times do |i|
-    dir_permission = octal_permission.map { |n| permission[n.to_i] }.join
-  end
+  dir_permission = octal_permission.map { |n| permission[n.to_i] }.join
   dir_permission = extra_permission(dir_permission, octal_permission)
 end
 
