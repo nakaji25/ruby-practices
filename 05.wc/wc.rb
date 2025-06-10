@@ -11,7 +11,7 @@ def main
     else
       ARGV.map do |file|
         str = File.read(file)
-        build_counts(str, ARGV)
+        build_counts(str, file)
       end
     end
   display_counts(counts, opt)
@@ -44,11 +44,9 @@ def display_counts(counts, opt)
     print generate_padding(count[:lines]) if opt[:l]
     print generate_padding(count[:words]) if opt[:w]
     print generate_padding(count[:characters]) if opt[:c]
-    puts count[:path].nil? ? '' : count[:path]
+    puts count[:path].nil? ? '' : " #{count[:path]}"
   end
-  return if ARGV.empty?
-
-  display_totals(counts, opt)
+  display_totals(counts, opt) if ARGV.size >= 2
 end
 
 def generate_padding(str)
