@@ -4,7 +4,7 @@
 require 'optparse'
 
 def main
-  opt = parse_options
+  options = parse_options
   counts =
     if ARGV.empty?
       [build_counts($stdin.readlines.join)]
@@ -14,7 +14,8 @@ def main
         build_counts(str, file)
       end
     end
-  display_counts(counts, opt)
+  counts.map { |count| display_count(count, options) }
+  total_counts(counts, options) if ARGV.size >= 2
 end
 
 def parse_options
@@ -25,9 +26,7 @@ def parse_options
   opt.on('-c') { |byte| options[:c] = byte }
   opt.parse!(ARGV)
 
-  return { c: true, l: true, w: true } if options.empty?
-
-  options
+  options.empty? ? { c: true, l: true, w: true } : options
 end
 
 def build_counts(str, path = nil)
@@ -39,25 +38,26 @@ def build_counts(str, path = nil)
   }
 end
 
-def display_counts(counts, opt)
-  counts.each do |count|
-    print generate_padding(count[:lines]) if opt[:l]
-    print generate_padding(count[:words]) if opt[:w]
-    print generate_padding(count[:characters]) if opt[:c]
-    puts count[:path].nil? ? '' : " #{count[:path]}"
-  end
-  display_totals(counts, opt) if ARGV.size >= 2
+def display_count(count, options)
+  print_padding(count[:lines]) if options[:l]
+  print_padding(count[:words]) if options[:w]
+  print_padding(count[:characters]) if options[:c]
+  puts count[:path].nil? ? '' : " #{count[:path]}"
 end
 
-def generate_padding(str)
-  str.to_s.rjust(8)
+def print_padding(str)
+  print str.to_s.rjust(8)
 end
 
-def display_totals(counts, opt)
-  print generate_padding(sum_count(counts, :lines)) if opt[:l]
-  print generate_padding(sum_count(counts, :words)) if opt[:w]
-  print generate_padding(sum_count(counts, :characters)) if opt[:c]
-  puts ' total'
+def total_counts(counts, options)
+  total =
+    {
+      lines: sum_count(counts, :lines),
+      words: sum_count(counts, :words),
+      characters: sum_count(counts, :characters),
+      path: 'total'
+    }
+  display_count(total, options)
 end
 
 def sum_count(counts, key)
