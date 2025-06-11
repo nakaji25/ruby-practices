@@ -14,7 +14,7 @@ class Game
     @frames.sum(&:frame_score)
   end
 
-  def generate_pins(pins)
+  def generate_frames(pins)
     index = 0
     frame_counter = 0
     while index <= pins.length
