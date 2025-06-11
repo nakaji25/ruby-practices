@@ -15,9 +15,9 @@ def main
   dirs.reverse! if opt[:r]
   display = Display.new(dirs)
   if opt[:l]
-    display.long_contents
+    display.display_long
   else
-    display.contents
+    display.display_dirs
   end
 end
 

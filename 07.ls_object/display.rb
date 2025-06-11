@@ -5,7 +5,7 @@ class Display
     @dirs = dirs
   end
 
-  def contents
+  def display_dirs
     padding = max_length(:name) + 1
     terminal_cols = `tput cols`.to_i
     output_rows = (@dirs.size.to_f / (terminal_cols / padding).floor).ceil
@@ -17,7 +17,7 @@ class Display
     end
   end
 
-  def long_contents
+  def display_long
     puts "total #{@dirs.map(&:dir_blocks).sum}"
     @dirs.each do |dir|
       print dir.permission.rjust(max_length(:permission))
