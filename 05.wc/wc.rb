@@ -14,7 +14,7 @@ def main
         build_counts(str, file)
       end
     end
-  counts.map { |count| display_count(count, options) }
+  counts.each { |count| display_count(count, options) }
   total_counts(counts, options) if ARGV.size >= 2
 end
 
@@ -33,30 +33,30 @@ def build_counts(str, path = nil)
   {
     lines: str.count("\n"),
     words: str.split(/\s+/).size,
-    characters: str.encode('UTF-8').bytesize,
+    chars: str.encode('UTF-8').bytesize,
     path: path
   }
 end
 
 def display_count(count, options)
-  print_padding(count[:lines]) if options[:l]
-  print_padding(count[:words]) if options[:w]
-  print_padding(count[:characters]) if options[:c]
-  puts count[:path].nil? ? '' : " #{count[:path]}"
+  print format_number(count[:lines]) if options[:l]
+  print format_number(count[:words]) if options[:w]
+  print format_number(count[:chars]) if options[:c]
+  puts " #{count[:path]}".rstrip
 end
 
-def print_padding(str)
-  print str.to_s.rjust(8)
+def format_number(number)
+  number.to_s.rjust(8)
 end
 
 def total_counts(counts, options)
-  total =
-    {
-      lines: sum_count(counts, :lines),
-      words: sum_count(counts, :words),
-      characters: sum_count(counts, :characters),
-      path: 'total'
-    }
+  sum = ->(key) { counts.sum { |count| count[key] } }
+  total = {
+    lines: sum.call(:lines),
+    words: sum.call(:words),
+    chars: sum.call(:chars),
+    path: 'total'
+  }
   display_count(total, options)
 end
 
