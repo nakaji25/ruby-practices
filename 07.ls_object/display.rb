@@ -1,36 +1,67 @@
 # frozen_string_literal: true
 
 class Display
-  def initialize(dirs)
-    @dirs = dirs
+  def initialize(entries)
+    @entries = entries
   end
 
-  def display_dirs
-    padding = max_length(:name) + 1
+  def display_entries
+    padding = max_length(@entries.map(&:name)) + 1
     terminal_cols = `tput cols`.to_i
-    output_rows = (@dirs.size.to_f / (terminal_cols / padding).floor).ceil
+    output_rows = (@entries.size.to_f / (terminal_cols / padding).floor).ceil
     output_rows.times do |row|
-      row.step(@dirs.size - 1, output_rows) do |col|
-        print @dirs[col].name.ljust(padding)
+      row.step(@entries.size - 1, output_rows) do |col|
+        print @entries[col].name.ljust(padding)
       end
       print "\n"
     end
   end
 
   def display_long
-    puts "total #{@dirs.map(&:dir_blocks).sum}"
-    @dirs.each do |dir|
-      print dir.permission.rjust(max_length(:permission))
-      print dir.nlink.rjust(max_length(:nlink) + 1)
-      print dir.owner_name.rjust(max_length(:owner_name) + 1)
-      print dir.group_name.rjust(max_length(:group_name) + 1)
-      print dir.dir_size.rjust(max_length(:dir_size) + 1)
-      print dir.accses_time.rjust(max_length(:accses_time) + 1)
-      puts dir.name
+    puts "total #{@entries.map(&:entry_blocks).sum}"
+    long_entries = format_long
+    paddings = generate_paddings(long_entries)
+    long_entries.each do |long_entry|
+      line = long_entry.map do |key, value|
+        if key == :name
+          value
+        elsif %i[nlink grop_name dir_size].include?(key)
+          value.rjust(paddings[key] + 1)
+        else
+          value.rjust(paddings[key])
+        end
+      end.join(' ')
+      puts line
     end
   end
 
-  def max_length(key)
-    @dirs.map(&key).max_by(&:length).length
+  def format_long
+    @entries.map do |entry|
+      {
+        permission: entry.permission,
+        nlink: entry.nlink.to_s,
+        owner_name: entry.owner_name,
+        grop_name: entry.group_name,
+        dir_size: entry.entry_size.to_s,
+        accses_time: entry.accses_time.strftime('%_m %e %H:%M'),
+        name: entry.name
+      }
+    end
+  end
+
+  def generate_paddings(long_entries)
+    {
+      permission: max_length(long_entries.map { |d| d[:permission] }),
+      nlink: max_length(long_entries.map { |d| d[:nlink] }),
+      owner_name: max_length(long_entries.map { |d| d[:owner_name] }),
+      grop_name: max_length(long_entries.map { |d| d[:grop_name] }),
+      dir_size: max_length(long_entries.map { |d| d[:dir_size] }),
+      accses_time: max_length(long_entries.map { |d| d[:accses_time] }),
+      name: 0
+    }
+  end
+
+  def max_length(str)
+    str.max_by(&:length).length
   end
 end

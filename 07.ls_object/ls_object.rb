@@ -1,27 +1,26 @@
 # frozen_string_literal: true
 
-require_relative 'directory'
+require_relative 'entry'
 require_relative 'display'
 require 'optparse'
 
 def main
-  opt = parse_opt
-  dir_names = if opt[:a]
-                Dir.entries('.').sort
-              else
-                Dir.glob('*')
-              end
-  dirs = dir_names.map { |dir_name| Directory.new(dir_name) }
-  dirs.reverse! if opt[:r]
-  display = Display.new(dirs)
-  if opt[:l]
+  options = parse_options
+  entry_names = if options[:a]
+                  Dir.entries('.').sort
+                else
+                  Dir.glob('*')
+                end
+  entries = entry_names.map { |entry_name| Entry.new(entry_name) }
+  display = options[:r] ? Display.new(entries.reverse) : Display.new(entries)
+  if options[:l]
     display.display_long
   else
-    display.display_dirs
+    display.display_entries
   end
 end
 
-def parse_opt
+def parse_options
   opt = OptionParser.new
   options = {}
   opt.on('-a') { |all| options[:a] = all }
