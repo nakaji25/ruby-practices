@@ -5,9 +5,11 @@ class Display
     @entries = entries
   end
 
-  def display_entries(long_option)
-    long_option.nil? ? display_short : display_long
+  def display_entries(long_format: false)
+    long_format ? display_long : display_short
   end
+
+  private
 
   def display_short
     padding = max_length(:name) + 1
@@ -34,8 +36,6 @@ class Display
       puts long_entry.name
     end
   end
-
-  private
 
   def generate_paddings
     {

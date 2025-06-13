@@ -5,7 +5,15 @@ require 'etc'
 class Entry
   attr_reader :name
 
-  FILE_TYPE = { fifo: 'p', characterSpecial: 'c', directory: 'd', blockSpecial: 'b', file: '-', link: 'l', socket: 's' }.freeze
+  FILE_TYPE = {
+    fifo: 'p',
+    characterSpecial: 'c',
+    directory: 'd',
+    blockSpecial: 'b',
+    file: '-',
+    link: 'l',
+    socket: 's'
+  }.freeze
   PERMISSION = ['---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx'].freeze
 
   def initialize(entry_name)
@@ -48,7 +56,7 @@ class Entry
   private
 
   def entry_permission
-    octal_permission = @fs.mode.to_s(8)[-3, 3].split('')
+    octal_permission = @fs.mode.to_s(8)[-3, 3].chars
     nomal_permission = octal_permission.map { |n| PERMISSION[n.to_i] }.join
     extra_permission(nomal_permission)
   end
