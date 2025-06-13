@@ -21,6 +21,32 @@ class Entry
     FILE_TYPE[File.ftype(@name).to_sym]
   end
 
+  def nlink
+    @fs.nlink
+  end
+
+  def owner_name
+    Etc.getpwuid(@fs.uid).name
+  end
+
+  def group_name
+    Etc.getgrgid(@fs.gid).name
+  end
+
+  def entry_size
+    @fs.size
+  end
+
+  def access_time
+    @fs.atime
+  end
+
+  def entry_blocks
+    @fs.blocks
+  end
+
+  private
+
   def entry_permission
     octal_permission = @fs.mode.to_s(8)[-3, 3].split('')
     nomal_permission = octal_permission.map { |n| PERMISSION[n.to_i] }.join
@@ -41,29 +67,5 @@ class Entry
       end
     end
     nomal_permission
-  end
-
-  def nlink
-    @fs.nlink
-  end
-
-  def owner_name
-    Etc.getpwuid(@fs.uid).name
-  end
-
-  def group_name
-    Etc.getgrgid(@fs.gid).name
-  end
-
-  def entry_size
-    @fs.size
-  end
-
-  def accses_time
-    @fs.atime
-  end
-
-  def entry_blocks
-    @fs.blocks
   end
 end

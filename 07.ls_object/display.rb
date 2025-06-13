@@ -35,6 +35,8 @@ class Display
     end
   end
 
+  private
+
   def format_long
     @entries.map do |entry|
       {
@@ -43,7 +45,7 @@ class Display
         owner_name: entry.owner_name,
         grop_name: entry.group_name,
         dir_size: entry.entry_size.to_s,
-        accses_time: entry.accses_time.strftime('%_m %e %H:%M'),
+        access_time: entry.accses_time.strftime('%_m %e %H:%M'),
         name: entry.name
       }
     end
@@ -56,7 +58,7 @@ class Display
       owner_name: max_length(long_entries.map { |d| d[:owner_name] }),
       grop_name: max_length(long_entries.map { |d| d[:grop_name] }),
       dir_size: max_length(long_entries.map { |d| d[:dir_size] }),
-      accses_time: max_length(long_entries.map { |d| d[:accses_time] }),
+      access_time: max_length(long_entries.map { |d| d[:accses_time] }),
       name: 0
     }
   end
