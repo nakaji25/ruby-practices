@@ -8,7 +8,7 @@ class Display
   def display_entries
     padding = max_length(@entries.map(&:name)) + 1
     terminal_cols = `tput cols`.to_i
-    output_rows = (@entries.size.to_f / (terminal_cols / padding).floor).ceil
+    output_rows = @entries.size.ceildiv((terminal_cols / padding).floor)
     output_rows.times do |row|
       row.step(@entries.size - 1, output_rows) do |col|
         print @entries[col].name.ljust(padding)
@@ -45,7 +45,7 @@ class Display
         owner_name: entry.owner_name,
         grop_name: entry.group_name,
         dir_size: entry.entry_size.to_s,
-        access_time: entry.accses_time.strftime('%_m %e %H:%M'),
+        access_time: entry.access_time.strftime('%_m %e %H:%M'),
         name: entry.name
       }
     end
@@ -58,7 +58,7 @@ class Display
       owner_name: max_length(long_entries.map { |d| d[:owner_name] }),
       grop_name: max_length(long_entries.map { |d| d[:grop_name] }),
       dir_size: max_length(long_entries.map { |d| d[:dir_size] }),
-      access_time: max_length(long_entries.map { |d| d[:accses_time] }),
+      access_time: max_length(long_entries.map { |d| d[:access_time] }),
       name: 0
     }
   end
