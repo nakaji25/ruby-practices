@@ -24,8 +24,8 @@ class Display
   end
 
   def display_long
-    puts "total #{@entries.map(&:entry_blocks).sum}"
-    paddings = generate_paddings
+    puts "total #{@entries.sum(&:entry_blocks)}"
+    paddings = generate_row_width
     @entries.each do |long_entry|
       print long_entry.permission
       print long_entry.nlink.to_s.rjust(paddings[:nlink] + 2)
@@ -37,7 +37,7 @@ class Display
     end
   end
 
-  def generate_paddings
+  def generate_row_width
     {
       nlink: max_length(:nlink),
       owner_name: max_length(:owner_name),
@@ -47,6 +47,6 @@ class Display
   end
 
   def max_length(key)
-    @entries.map { |d| d.send(key).to_s.size }.max
+    @entries.map { |e| e.send(key).to_s.size }.max
   end
 end

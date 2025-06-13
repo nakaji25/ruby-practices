@@ -14,7 +14,16 @@ class Entry
     link: 'l',
     socket: 's'
   }.freeze
-  PERMISSION = ['---', '--x', '-w-', '-wx', 'r--', 'r-x', 'rw-', 'rwx'].freeze
+  PERMISSION = [
+    '---',
+    '--x',
+    '-w-',
+    '-wx',
+    'r--',
+    'r-x',
+    'rw-',
+    'rwx'
+  ].freeze
 
   def initialize(entry_name)
     @name = entry_name
@@ -63,17 +72,18 @@ class Entry
 
   def extra_permission(nomal_permission)
     extra_permission = @fs.mode.to_s(8)[-4, 1].to_i.to_s(2).rjust(3, '0')
+    result = nomal_permission.dup
     unless extra_permission == '000'
       if extra_permission[-1] == '1'
-        nomal_permission[-1] = nomal_permission[-1] == 'x' ? 't' : 'T'
+        result[-1] = nomal_permission[-1] == 'x' ? 't' : 'T'
       end
       if extra_permission[-2] == '1'
-        nomal_permission[-4] = nomal_permission[-4] == 'x' ? 's' : 'S'
+        result[-4] = nomal_permission[-4] == 'x' ? 's' : 'S'
       end
       if extra_permission[-3] == '1'
-        nomal_permission[-7] = nomal_permission[-7] == 'x' ? 's' : 'S'
+        result[-7] = nomal_permission[-7] == 'x' ? 's' : 'S'
       end
     end
-    nomal_permission
+    result
   end
 end
