@@ -34,10 +34,6 @@ class Entry
     type + entry_permission
   end
 
-  def type
-    FILE_TYPE[File.ftype(@name).to_sym]
-  end
-
   def nlink
     @fs.nlink
   end
@@ -63,6 +59,10 @@ class Entry
   end
 
   private
+
+  def type
+    FILE_TYPE[File.ftype(@name).to_sym]
+  end
 
   def entry_permission
     octal_permission = @fs.mode.to_s(8)[-3, 3].chars

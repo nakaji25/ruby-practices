@@ -6,11 +6,7 @@ require 'optparse'
 
 def main
   options = parse_options
-  entry_names = if options[:a]
-                  Dir.entries('.').sort
-                else
-                  Dir.glob('*')
-                end
+  entry_names = options[:a] ? Dir.entries('.').sort : Dir.glob('*')
   entries = entry_names.map { |entry_name| Entry.new(entry_name) }
   sorted_entries = options[:r] ? entries.reverse : entries
   display = Display.new(sorted_entries)

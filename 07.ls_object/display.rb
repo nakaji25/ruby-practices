@@ -12,12 +12,12 @@ class Display
   private
 
   def display_short
-    padding = max_length(:name) + 1
+    col_width = max_length(:name) + 1
     terminal_cols = `tput cols`.to_i
-    output_rows = @entries.size.ceildiv((terminal_cols / padding).floor)
+    output_rows = @entries.size.ceildiv((terminal_cols / col_width).floor)
     output_rows.times do |row|
       row.step(@entries.size - 1, output_rows) do |col|
-        print @entries[col].name.ljust(padding)
+        print @entries[col].name.ljust(col_width)
       end
       print "\n"
     end
@@ -25,19 +25,19 @@ class Display
 
   def display_long
     puts "total #{@entries.sum(&:entry_blocks)}"
-    paddings = generate_row_width
-    @entries.each do |long_entry|
-      print long_entry.permission
-      print long_entry.nlink.to_s.rjust(paddings[:nlink] + 2)
-      print long_entry.owner_name.rjust(paddings[:owner_name] + 1)
-      print long_entry.group_name.rjust(paddings[:group_name] + 2)
-      print long_entry.entry_size.to_s.rjust(paddings[:entry_size] + 2)
-      print long_entry.access_time.strftime(' %_m %e %H:%M ')
-      puts long_entry.name
+    col_widths = generate_col_widths
+    @entries.each do |entry|
+      print entry.permission
+      print entry.nlink.to_s.rjust(col_widths[:nlink] + 2)
+      print entry.owner_name.rjust(col_widths[:owner_name] + 1)
+      print entry.group_name.rjust(col_widths[:group_name] + 2)
+      print entry.entry_size.to_s.rjust(col_widths[:entry_size] + 2)
+      print entry.access_time.strftime(' %_m %e %H:%M ')
+      puts entry.name
     end
   end
 
-  def generate_row_width
+  def generate_col_widths
     {
       nlink: max_length(:nlink),
       owner_name: max_length(:owner_name),
