@@ -12,12 +12,9 @@ def main
                   Dir.glob('*')
                 end
   entries = entry_names.map { |entry_name| Entry.new(entry_name) }
-  display = options[:r] ? Display.new(entries.reverse) : Display.new(entries)
-  if options[:l]
-    display.display_long
-  else
-    display.display_entries
-  end
+  display_entries = options[:r] ? entries.reverse : entries
+  display = Display.new(display_entries)
+  display.display_entries(options[:l])
 end
 
 def parse_options

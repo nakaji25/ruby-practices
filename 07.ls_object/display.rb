@@ -5,7 +5,11 @@ class Display
     @entries = entries
   end
 
-  def display_entries
+  def display_entries(long_option)
+    long_option.nil? ? display_short : display_long
+  end
+
+  def display_short
     padding = max_length(@entries.map(&:name)) + 1
     terminal_cols = `tput cols`.to_i
     output_rows = @entries.size.ceildiv((terminal_cols / padding).floor)
