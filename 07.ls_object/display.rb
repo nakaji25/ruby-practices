@@ -19,51 +19,30 @@ class Display
 
   def display_long
     puts "total #{@entries.map(&:entry_blocks).sum}"
-    long_entries = format_long
-    paddings = generate_paddings(long_entries)
-    long_entries.each do |long_entry|
-      line = long_entry.map do |key, value|
-        if key == :name
-          value
-        elsif %i[nlink grop_name dir_size].include?(key)
-          value.rjust(paddings[key] + 1)
-        else
-          value.rjust(paddings[key])
-        end
-      end.join(' ')
-      puts line
+    paddings = generate_paddings
+    @entries.each do |long_entry|
+      print long_entry.permission
+      print long_entry.nlink.to_s.rjust(paddings[:nlink] + 1)
+      print long_entry.owner_name.rjust(paddings[:owner_name] + 1)
+      print long_entry.group_name.rjust(paddings[:group_name] + 2)
+      print long_entry.entry_size.to_s.rjust(paddings[:entry_size] + 2)
+      print long_entry.access_time.strftime('%_m %e %H:%M')
+      puts long_entry.name
     end
   end
 
   private
 
-  def format_long
-    @entries.map do |entry|
-      {
-        permission: entry.permission,
-        nlink: entry.nlink.to_s,
-        owner_name: entry.owner_name,
-        grop_name: entry.group_name,
-        dir_size: entry.entry_size.to_s,
-        access_time: entry.access_time.strftime('%_m %e %H:%M'),
-        name: entry.name
-      }
-    end
-  end
-
-  def generate_paddings(long_entries)
+  def generate_paddings
     {
-      permission: max_length(long_entries.map { |d| d[:permission] }),
-      nlink: max_length(long_entries.map { |d| d[:nlink] }),
-      owner_name: max_length(long_entries.map { |d| d[:owner_name] }),
-      grop_name: max_length(long_entries.map { |d| d[:grop_name] }),
-      dir_size: max_length(long_entries.map { |d| d[:dir_size] }),
-      access_time: max_length(long_entries.map { |d| d[:access_time] }),
-      name: 0
+      nlink: max_length(@entries.map { |d| d.send(:nlink).to_s }),
+      owner_name: max_length(@entries.map(&:owner_name)),
+      group_name: max_length(@entries.map(&:group_name)),
+      entry_size: max_length(@entries.map { |d| d.send(:entry_size).to_s })
     }
   end
 
   def max_length(str)
-    str.max_by(&:length).length
+    str.max.length
   end
 end
